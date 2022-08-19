@@ -20,7 +20,7 @@ def clickEvent(event, x, y, flag, param):
         if event == cv.EVENT_LBUTTONDOWN:
             xAux.append(x)
             yAux.append(y)
-            #points.append(x, y)
+            #points.append(x, y)hehe
             coords = str(x) + ", " + str(y)
             cv.putText(frame, coords, (x, y), font, 1, (0, 0, 255), 1)
 
