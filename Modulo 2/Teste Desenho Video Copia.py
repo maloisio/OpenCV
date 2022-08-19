@@ -51,7 +51,7 @@ while cap.isOpened():
                     cv.line(frame, (xAux[i - 1], yAux[i - 1]), (xAux[i], yAux[i]), (0, 255, 255), 2)
 
     if len(xAux) == 3:
-        #cv.line(framee, (xAux[1], yAux[1]), (xAux[2], yAux[2]), (0, 0, 255), 5)
+        #cv.line(frameee, (xAux[1], yAux[1]), (xAux[2], yAux[2]), (0, 0, 255), 5)
                 #cv.line(frame, (xAux[2], yAux[2]), (xAux[3], yAux[3]), (0, 0, 255), 5)
         cv.rectangle(frame, (xAux[0], yAux[0]), (xAux[1], yAux[2]), (0, 0, 255), thickness=7)
 
