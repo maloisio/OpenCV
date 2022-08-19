@@ -6,7 +6,7 @@ frame2 = np.zeros([512, 512, 3], np.uint8)  # criacao imagem preta
 font = cv.FONT_HERSHEY_SIMPLEX
 cap = cv.VideoCapture("../Players.mp4")
 
-tracker5 = cv.TrackerGOTURN_create()
+tracker5 = cv.TrackerMIL_create()
 tracker = cv.TrackerMIL_create()
 tracker2 = cv.TrackerMIL_create()
 tracker3 = cv.TrackerMIL_create()
