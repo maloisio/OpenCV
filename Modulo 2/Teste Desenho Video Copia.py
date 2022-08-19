@@ -3,7 +3,7 @@ import cv2 as cv
 
 frame2 = np.zeros([512, 512, 3], np.uint8)  # criacao imagem preta
 font = cv.FONT_HERSHEY_SIMPLEX
-cap = cv.VideoCapture(0)
+cap = cv.VideoCapture("..\Players.mp4")
 points = []
 xAux = []
 yAux = []
@@ -20,7 +20,7 @@ def clickEvent(event, x, y, flag, param):
         if event == cv.EVENT_LBUTTONDOWN:
             xAux.append(x)
             yAux.append(y)
-            #points.append(x, y)
+            #points.append(x, y)hehe
             coords = str(x) + ", " + str(y)
             cv.putText(frame, coords, (x, y), font, 1, (0, 0, 255), 1)
 
