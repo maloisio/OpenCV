@@ -1,55 +1,69 @@
-import numpy as np
 import cv2 as cv
-import sys
+import numpy as np
+from numpy.ma import append
+from scipy.spatial import distance as dist
 
-frame2 = np.zeros([512, 512, 3], np.uint8)  # criacao imagem preta
-font = cv.FONT_HERSHEY_SIMPLEX
-cap = cv.VideoCapture("../Players.mp4")
+xIndex = []
+yIndex = []
+wIndex = []
+hIndex = []
 
-tracker5 = cv.TrackerMIL_create()
-tracker = cv.TrackerMIL_create()
-tracker2 = cv.TrackerMIL_create()
-tracker3 = cv.TrackerMIL_create()
-tracker4 = cv.TrackerMIL_create()
-success, img = cap.read()
+cap = cv.VideoCapture(0)
 
-bbox = cv.selectROI("Tracking", img, False)
-bbox2 = cv.selectROI("Tracking", img, False)
-bbox3 = cv.selectROI("Tracking", img, False)
-bbox4 = cv.selectROI("Tracking", img, False)
+while True:
+    _, frame = cap.read()
+    blurred_frame = cv.GaussianBlur(frame, (5, 5), 0)
+    hsv = cv.cvtColor(blurred_frame, cv.COLOR_BGR2HSV)  # transforma o frame em hsv
 
-tracker.init(img, bbox)
-tracker2.init(img, bbox2)
-tracker3.init(img, bbox3)
-tracker4.init(img, bbox4)
+    lowerBlue = np.array([110, 50, 50])  # defenimos o range do loweblue H,S,V
+    upperBlue = np.array([130, 255, 255])  # definimos o range do high blue H,S,V
 
-lowerBlueHsv = np.array([90, 50, 50])
-upperBlueHsv = np.array([130, 255, 255])
+    maskBlue = cv.inRange(hsv, lowerBlue, upperBlue)  # oq estamos aceitando do HSV fica branco e o resto preto
 
-def drawBox(img, bbox):
-    x, y, w, h = int(bbox[0]),int(bbox[1]),int(bbox[2]),int(bbox[3])
-    cv.rectangle(img, (x,y), ((x+w),(y+h)), (255, 0, 255), 3, 1)
+    contours, hierachy, = cv.findContours(maskBlue, cv.RETR_TREE,
+                                          cv.CHAIN_APPROX_NONE)  # _ quer dizer que vai receber algo, NONE PEGA TODOS PONTOS, SIMPLE PEGA 4
 
-while cap.isOpened():
+    if len(contours) != 0:
+        for contours in contours:
+            if cv.contourArea(contours) > 100:  # para nao ficar pegando pontos pequenos
 
-    success, img = cap.read()
-    success, bbox = tracker.update(img)
-    success, bbox2 = tracker2.update(img)
-    success, bbox3 = tracker3.update(img)
-    success, bbox4 = tracker4.update(img)
+                # print(contours)
+                # cv.drawContours(frame, contours, -1, (0, 255, 255), thickness=2)
+                x, y, w, h = cv.boundingRect(
+                    contours)  # identificar um retangulo por 4 pontos e retorna as coordenadas do retangulo
+                xIndex.append(x)
+                yIndex.append(y)
+                wIndex.append(w)
+                hIndex.append(h)
+                cv.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 255), 3)
+                cv.circle(frame, (int(x + w / 2), int(y + h / 2)), 4, (0, 0, 255), -1)
 
-    if success:
-        drawBox(img, bbox)
-        drawBox(img, bbox2)
-        drawBox(img, bbox3)
-        drawBox(img, bbox4)
-    else:
-        cv.putText(img, "Lost", (75, 50), cv.FONT_HERSHEY_SIMPLEX, 0.7, (0,0,255),2)
+    if len(xIndex) >= 3:
+        for i in range(int(len(xIndex))):
+            distEuc = dist.euclidean((int(xIndex[i] + wIndex[i] / 2), int(yIndex[i] + hIndex[i] / 2)),
+                                     (int(xIndex[i - 1] + wIndex[i - 1] / 2),
+                                      int(yIndex[i - 1] + hIndex[i - 1] / 2)))
+            distEuc2 = dist.euclidean((int(xIndex[i-1] + wIndex[i-1] / 2), int(yIndex[i-1] + hIndex[i-1] / 2)),
+                                     (int(xIndex[i - 2] + wIndex[i - 2] / 2),
+                                      int(yIndex[i - 2] + hIndex[i - 2] / 2)))
+        print(distEuc)
+        print(distEuc2)
+        if int(distEuc) > 100:
+            cv.line(frame, (int(xIndex[i] + wIndex[i] / 2), int(yIndex[i] + hIndex[i] / 2)), (int(xIndex[i-1] + wIndex[i-1] / 2), int(yIndex[i-1] + hIndex[i-1] / 2)), (255, 0, 0), 3)
+            cv.line(maskBlue, (int(xIndex[i] + wIndex[i] / 2), int(yIndex[i] + hIndex[i] / 2)),
+                    (int(xIndex[i - 1] + wIndex[i - 1] / 2), int(yIndex[i - 1] + hIndex[i - 1] / 2)), (255, 0, 0), 3)
+        if int(distEuc2) > 100:
+            cv.line(frame, (int(xIndex[i-1] + wIndex[i-1] / 2), int(yIndex[i-1] + hIndex[i-1] / 2)), (int(xIndex[i-2] + wIndex[i-2] / 2), int(yIndex[i-2] + hIndex[i-2] / 2)), (255, 0, 0), 3)
+            cv.line(maskBlue, (int(xIndex[i - 1] + wIndex[i - 1] / 2), int(yIndex[i - 1] + hIndex[i - 1] / 2)),
+            (int(xIndex[i - 2] + wIndex[i - 2] / 2), int(yIndex[i - 2] + hIndex[i - 2] / 2)), (255, 0, 0), 3)
 
+    cv.imshow("Frame", frame)
+    cv.imshow("Mask", maskBlue)
+    # cv.imshow("Output", outputMaskBit)
 
-    cv.imshow("Tracking", img)
-
-    if cv.waitKey(1) & 0xff == ord("q"):
+    key = cv.waitKey(1)
+    if key == 27:
         break
 
+cap.release()
 cv.destroyAllWindows()

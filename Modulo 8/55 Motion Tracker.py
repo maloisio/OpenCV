@@ -24,6 +24,7 @@ while cap.isOpened():
 
         cv.rectangle(frame1, (x, y), (x + w, y + h), (0, 255, 0), 2)
         cv.circle(frame1, (int(x +w/2), int(y + h/2)), 4, (0, 0, 255), -1)
+
     cv.imshow("Motion", frame1)
 
     frame1 = frame2
