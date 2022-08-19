@@ -3,7 +3,7 @@ import cv2 as cv
 
 frame2 = np.zeros([512, 512, 3], np.uint8)  # criacao imagem preta
 font = cv.FONT_HERSHEY_SIMPLEX
-cap = cv.VideoCapture(0)
+cap = cv.VideoCapture(0)2
 points = []
 xAux = []
 yAux = []
