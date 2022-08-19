@@ -3,7 +3,7 @@ import cv2 as cv
 
 frame2 = np.zeros([512, 512, 3], np.uint8)  # criacao imagem preta
 font = cv.FONT_HERSHEY_SIMPLEX
-cap = cv.VideoCapture("../Players.mp4")
+cap = cv.VideoCapture(0)
 points = []
 xAux = []
 yAux = []
@@ -58,7 +58,7 @@ while cap.isOpened():
         re = True
 
         #copia para janela nova o retangulo utilizando bolinha individual
-        #newFrame = frame[yAux[0]:yAux[2], xAux[0]:xAux[1]]  # pegando a bola da imagem original
+        #newFramee = frame[yAux[0]:yAux[2], xAux[0]:xAux[1]]  # pegando a bola da imagem original
         #frame2[yAux[0]:yAux[2], xAux[0]:xAux[1]] = newFrame
 
     newFrame = frame[int(bbox[1]):int(bbox[1])+int(bbox[3]), int(bbox[0]):int(bbox[0])+int(bbox[2])]  # pegando a bola da imagem original
