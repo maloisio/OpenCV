@@ -9,7 +9,7 @@ imgHeight = img.shape[0]
 imgWidth = img.shape[1]
 imgChannels = img.shape[2]
 
-img2 = np.zeros([imgWidth, imgHeight, imgChannels], np.uint8)  # criacao imagem preta
+#img2 = np.zeros([imgWidth, imgHeight, imgChannels], np.uint8)  # criacao imagem preta
 bbox = cv.selectROI("Tracking", img, False)
 
 def display():
@@ -22,11 +22,13 @@ def drawBox(img, bbox):
 cv.namedWindow("Gray Tracker")
 cv.createTrackbar("H", "Gray Tracker", 0, 255, display)
 cv.createTrackbar("A", "Gray Tracker", 0, 15000, display)
-cv.createTrackbar("Ab", "Gray Tracker", 15000, 0, display)
+#cv.createTrackbar("Ab", "Gray Tracker", 15000, 0, display)
 
 drawBox(img, bbox)
 
+img2 = np.zeros([int(bbox[2])-int(bbox[0]), int(bbox[3])-int(bbox[1]), imgChannels], np.uint8)
 newFrame = img[int(bbox[1]):int(bbox[1]) + int(bbox[3]),int(bbox[0]):int(bbox[0]) + int(bbox[2])]  # pegando a bola da imagem original
+
 img2[int(bbox[1]):int(bbox[1]) + int(bbox[3]), int(bbox[0]):int(bbox[0]) + int(bbox[2])] = newFrame
 
 while True:
@@ -57,15 +59,11 @@ while True:
                 x, y, w, h = cv.boundingRect(contours)
                 cv.rectangle(img, (x, y), (x + w, y + h), (0, 255, 255), 3)
                 cv.drawContours(img, contours, -1, (0, 255, 0), 2)
+                cv.drawContours(img2, contours, -1, (0, 255, 255), 2)
 
-    if len(contours2) != 0:
-        for contours2 in contours2:
-            if (cv.contourArea(contours2) > lA):  # para nao ficar pegando pontos pequenos
-                x, y, w, h = cv.boundingRect(contours2)
-                cv.rectangle(img2, (x, y), (x + w, y + h), (0, 255, 255), 3)
-                cv.drawContours(img2, contours2, -1, (0, 255, 0), 2)
 
-    cv.imshow("Image2", img2)
+
+    cv.imshow("Image23", img2)
     cv.imshow("Threash3", thresh3)
     cv.imshow("Gray Image2", img2Gray)
 
