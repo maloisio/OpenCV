@@ -10,13 +10,34 @@ hIndex = []
 
 cap = cv.VideoCapture(0)
 
+def display():
+    pass
+
+cv.namedWindow("HSV Tracker")
+cv.createTrackbar("LH", "HSV Tracker", 0, 255, display)
+cv.createTrackbar("LS", "HSV Tracker", 0, 255, display)
+cv.createTrackbar("LV", "HSV Tracker", 0, 255, display)
+
+cv.createTrackbar("UH", "HSV Tracker", 255, 255, display)
+cv.createTrackbar("US", "HSV Tracker", 255, 255, display)
+cv.createTrackbar("UV", "HSV Tracker", 255, 255, display)
+
+
 while True:
     _, frame = cap.read()
     blurred_frame = cv.GaussianBlur(frame, (5, 5), 0)
     hsv = cv.cvtColor(blurred_frame, cv.COLOR_BGR2HSV)  # transforma o frame em hsv
 
-    lowerBlue = np.array([110, 50, 50])  # defenimos o range do loweblue H,S,V
-    upperBlue = np.array([130, 255, 255])  # definimos o range do high blue H,S,V
+    lH = cv.getTrackbarPos("LH", "HSV Tracker")
+    lS = cv.getTrackbarPos("LS", "HSV Tracker")
+    lV = cv.getTrackbarPos("LV", "HSV Tracker")
+
+    uH = cv.getTrackbarPos("UH", "HSV Tracker")
+    uS = cv.getTrackbarPos("US", "HSV Tracker")
+    uV = cv.getTrackbarPos("UV", "HSV Tracker")
+
+    lowerBlue = np.array([lH, lS, lV])  # defenimos o range do loweblue H,S,V
+    upperBlue = np.array([uH, uS, uV])  # definimos o range do high blue H,S,V
 
     maskBlue = cv.inRange(hsv, lowerBlue, upperBlue)  # oq estamos aceitando do HSV fica branco e o resto preto
 
@@ -25,7 +46,7 @@ while True:
 
     if len(contours) != 0:
         for contours in contours:
-            if cv.contourArea(contours) > 100:  # para nao ficar pegando pontos pequenos
+            if cv.contourArea(contours) > 200:  # para nao ficar pegando pontos pequenos
 
                 # print(contours)
                 # cv.drawContours(frame, contours, -1, (0, 255, 255), thickness=2)
@@ -47,15 +68,15 @@ while True:
                                      (int(xIndex[i - 2] + wIndex[i - 2] / 2),
                                       int(yIndex[i - 2] + hIndex[i - 2] / 2)))
         print(distEuc)
-        print(distEuc2)
+        #print(distEuc2)
         if int(distEuc) > 100:
             cv.line(frame, (int(xIndex[i] + wIndex[i] / 2), int(yIndex[i] + hIndex[i] / 2)), (int(xIndex[i-1] + wIndex[i-1] / 2), int(yIndex[i-1] + hIndex[i-1] / 2)), (255, 0, 0), 3)
             cv.line(maskBlue, (int(xIndex[i] + wIndex[i] / 2), int(yIndex[i] + hIndex[i] / 2)),
                     (int(xIndex[i - 1] + wIndex[i - 1] / 2), int(yIndex[i - 1] + hIndex[i - 1] / 2)), (255, 0, 0), 3)
-        if int(distEuc2) > 100:
-            cv.line(frame, (int(xIndex[i-1] + wIndex[i-1] / 2), int(yIndex[i-1] + hIndex[i-1] / 2)), (int(xIndex[i-2] + wIndex[i-2] / 2), int(yIndex[i-2] + hIndex[i-2] / 2)), (255, 0, 0), 3)
-            cv.line(maskBlue, (int(xIndex[i - 1] + wIndex[i - 1] / 2), int(yIndex[i - 1] + hIndex[i - 1] / 2)),
-            (int(xIndex[i - 2] + wIndex[i - 2] / 2), int(yIndex[i - 2] + hIndex[i - 2] / 2)), (255, 0, 0), 3)
+        #if int(distEuc2) > 100:
+            #cv.line(frame, (int(xIndex[i-1] + wIndex[i-1] / 2), int(yIndex[i-1] + hIndex[i-1] / 2)), (int(xIndex[i-2] + wIndex[i-2] / 2), int(yIndex[i-2] + hIndex[i-2] / 2)), (255, 0, 0), 3)
+            #cv.line(maskBlue, (int(xIndex[i - 1] + wIndex[i - 1] / 2), int(yIndex[i - 1] + hIndex[i - 1] / 2)),
+            #(int(xIndex[i - 2] + wIndex[i - 2] / 2), int(yIndex[i - 2] + hIndex[i - 2] / 2)), (255, 0, 0), 3)
 
     cv.imshow("Frame", frame)
     cv.imshow("Mask", maskBlue)
