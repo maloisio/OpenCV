@@ -82,7 +82,7 @@ while True:
                 cv.drawContours(img2, contours, -1, (0, 255, 255), 2)
                 cv.drawContours(img2, [box], -1, (0, 255, 255), 2)
 
-                    cv.drawContours(img, hull, i, [0, 0, 255], 1, 8)
+                #cv.drawContours(img, hull, i, [0, 0, 255], 1, 8)
 
 
 
